@@ -36,13 +36,15 @@ var TaskCreator = React.createClass({
 });
 
 var TaskTypes = React.createClass({
-
+  setTab:function(evt){
+    window.AppEvent.fire('activateTab',evt.target.firstChild.nodeValue);
+  },
   render: function() {
     return (
       <ul id="differentiator" className="nav nav-tabs">
-        <li><a href="#">All</a></li>
-        <li><a href="#">Pending</a></li>
-        <li><a href="#">Completed</a></li>
+        <li><a href="#all" onClick={this.setTab}>All</a></li>
+        <li><a href="#pending" onClick={this.setTab}>Pending</a></li>
+        <li><a href="#completed" onClick={this.setTab}>Completed</a></li>
       </ul>
     );
   }
@@ -98,14 +100,46 @@ var TaskTable = React.createClass({
 });
 
 var RowItems = React.createClass({
-
+  getInitialState: function() {
+    return {
+      activeTab:'All' 
+    };
+  },
+  componentDidMount: function() {
+    var self = this;
+    window.AppEvent.subscribe('activateTab',function(name){
+      self.setState({activeTab:name});
+    });
+  },
   render: function() {
-    var item = this.props.item 
+    var item = this.props.item
+    var statusCls = 'danger';
+    var activeTabCls = ''
+    var activeTab = this.state.activeTab;
+
+    if(activeTab == 'All'){
+      activeTabCls = '';
+    }else if(activeTab == 'Pending' && (item.status == 'completed')){
+      activeTabCls = 'hidden';
+    }else if(activeTab == 'Completed' && (item.status == 'pending')){
+      activeTabCls = 'hidden';
+    }
+    
+    if(item.status == 'completed'){
+      statusCls = 'success';
+    }
+    
     return (
-      <tr className="success">
+      <tr className={statusCls + ' ' + activeTabCls}>
         <td>{item.title}</td>
         <td>{item.status}</td>
-        <td>Delete</td>
+        <td>
+          <select>
+            <option>Select Action</option>
+            <option>Remove Task</option>
+            <option>Mark as Completed</option>
+          </select>
+        </td>
         <td>{item.createdAt}</td>
         <td>{item.updatedAt}</td>
       </tr>
