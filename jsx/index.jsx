@@ -42,7 +42,7 @@ var TaskTypes = React.createClass({
   render: function() {
     return (
       <ul id="taskTypes" className="nav nav-tabs">
-        <li><a href="#all" onClick={this.setTab}>All</a></li>
+        <li className='active'><a href="#all" onClick={this.setTab}>All</a></li>
         <li><a href="#pending" onClick={this.setTab}>Pending</a></li>
         <li><a href="#completed" onClick={this.setTab}>Completed</a></li>
       </ul>
