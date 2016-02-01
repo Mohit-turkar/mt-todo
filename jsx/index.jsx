@@ -6,7 +6,7 @@ var ToDoApp = React.createClass({
         <TaskTypes/>
         <TaskTable/>
       </div>
-      );
+    );
   }
 });
 
@@ -148,20 +148,20 @@ var RowItems = React.createClass({
 });
 
 var TaskActions = React.createClass({
-  // getInitialState: function() {
-  //   return {
-  //     : 
-  //   };
-  // },
+  getInitialState: function() {
+    return {
+      resetVal:'null' 
+    };
+  },
   handleSelect:function(evt){
     var self = this;
     var item = this.props.item;
     if(evt.target.value == 'remove'){
       window.taskManager.remove(item,self.forceUpdate());
     }else if(evt.target.value == 'mark-complete'){
-      window.taskManager.update(item,'completed',self.forceUpdate());
+      window.taskManager.update(item,'completed',self.setState({resetVal:'null'}));
     }else if(evt.target.value == 'mark-pending'){
-      window.taskManager.update(item,'pending',self.forceUpdate());
+      window.taskManager.update(item,'pending',self.setState({resetVal:'null'}));
     }
   },
   render: function() {
@@ -173,7 +173,7 @@ var TaskActions = React.createClass({
     }
 
     return (
-      <select value='null' onChange={this.handleSelect}>
+      <select value={this.state.resetVal} onChange={this.handleSelect}>
         <option value='null'>Select Action</option>
         <option value='remove'>Remove Task</option>
         {customOpt}

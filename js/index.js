@@ -87,7 +87,6 @@ var TaskManager = function(){
           if(cb){
             cb.call(null,'error');
           }
-          console.log(error);
         }
     });
   }
@@ -95,10 +94,9 @@ var TaskManager = function(){
   self.update = function(item,status,cb){
     var edit = function(object) {
       object.set("status", status);
-      console.log('set to '+status);
-      object.save();
-      self.fetch();
-      console.log('set to '+status);
+      object.save().then(function(){
+        self.fetch();
+      });
     }
     queryAction(item,edit);
   }
