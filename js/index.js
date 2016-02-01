@@ -54,6 +54,19 @@ var TaskManager = function(){
 
   var tasks = new Tasks();
   var task = new Task();
+  var query = new Parse.Query(Task);
+
+  var queryAction = function(item,successCb){
+    query.equalTo("objectId", item.objectId);
+    query.first({
+      success: function(object){
+        successCb(object);
+      },
+      error: function(){
+        alert("Error: " + error.code + " " + error.message);  
+      }
+    });
+  }
 
   self.create = function(title,cb){
     task.save({title:title,status:'pending',active:true}).then(function(obj){
@@ -79,12 +92,29 @@ var TaskManager = function(){
     });
   }
   
-  self.update = function(){
-
+  self.update = function(item,status,cb){
+    var edit = function(object) {
+      object.set("status", status);
+      console.log('set to '+status);
+      object.save();
+      self.fetch();
+      console.log('set to '+status);
+    }
+    queryAction(item,edit);
   }
 
-  self.remove = function(){
-
+  self.remove = function(item,cb){
+    var destroy = function(object) {
+      object.destroy({
+        success: function(myObject) {
+          self.fetch();
+        },
+        error: function(myObject, error) {
+          alert("Error: " + error.code + " " + error.message);
+        }
+      });
+    }
+    queryAction(item,destroy);
   }
 };
 

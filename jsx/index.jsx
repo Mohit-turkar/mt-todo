@@ -18,8 +18,6 @@ var TaskCreator = React.createClass({
     window.taskManager.create(title,function(obj){
       self.refs.title.value = '';
       alert('Successfully saved.');
-      console.log(obj);
-      console.log(obj.toJSON());
     });
     evt.preventDefault();
   },
@@ -37,18 +35,19 @@ var TaskCreator = React.createClass({
 
 var TaskTypes = React.createClass({
   setTab:function(evt){
-    window.AppEvent.fire('activateTab',evt.target.firstChild.nodeValue);
+    $('#taskTypes li').removeClass('active');
+    $(evt.target).parent().addClass('active');
+    window.AppEvent.fire('showData',evt.target.firstChild.nodeValue);
   },
   render: function() {
     return (
-      <ul id="differentiator" className="nav nav-tabs">
+      <ul id="taskTypes" className="nav nav-tabs">
         <li><a href="#all" onClick={this.setTab}>All</a></li>
         <li><a href="#pending" onClick={this.setTab}>Pending</a></li>
         <li><a href="#completed" onClick={this.setTab}>Completed</a></li>
       </ul>
     );
   }
-
 });
 
 var TaskTable = React.createClass({
@@ -105,11 +104,15 @@ var RowItems = React.createClass({
       activeTab:'All' 
     };
   },
-  componentDidMount: function() {
+  showDataCb : function(name){
     var self = this;
-    window.AppEvent.subscribe('activateTab',function(name){
-      self.setState({activeTab:name});
-    });
+    self.setState({activeTab:name});
+  }, 
+  componentDidMount: function() {
+    window.AppEvent.subscribe('showData',this.showDataCb);
+  },
+  componentWillUnmount: function() {
+    window.AppEvent.unsubscribe('showData',this.showDataCb);
   },
   render: function() {
     var item = this.props.item
@@ -134,11 +137,7 @@ var RowItems = React.createClass({
         <td>{item.title}</td>
         <td>{item.status}</td>
         <td>
-          <select>
-            <option>Select Action</option>
-            <option>Remove Task</option>
-            <option>Mark as Completed</option>
-          </select>
+          <TaskActions item={item}/>
         </td>
         <td>{item.createdAt}</td>
         <td>{item.updatedAt}</td>
@@ -146,6 +145,41 @@ var RowItems = React.createClass({
     );
   }
 
+});
+
+var TaskActions = React.createClass({
+  // getInitialState: function() {
+  //   return {
+  //     : 
+  //   };
+  // },
+  handleSelect:function(evt){
+    var self = this;
+    var item = this.props.item;
+    if(evt.target.value == 'remove'){
+      window.taskManager.remove(item,self.forceUpdate());
+    }else if(evt.target.value == 'mark-complete'){
+      window.taskManager.update(item,'completed',self.forceUpdate());
+    }else if(evt.target.value == 'mark-pending'){
+      window.taskManager.update(item,'pending',self.forceUpdate());
+    }
+  },
+  render: function() {
+    var item = this.props.item;
+    var customOpt = <option value='mark-complete'>Mark as Completed</option>;
+
+    if(item.status == 'completed'){
+      customOpt = <option value='mark-pending'>Mark as Pending</option>;
+    }
+
+    return (
+      <select value='null' onChange={this.handleSelect}>
+        <option value='null'>Select Action</option>
+        <option value='remove'>Remove Task</option>
+        {customOpt}
+      </select>
+    );
+  }
 });
 
 ReactDOM.render(
