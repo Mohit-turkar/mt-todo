@@ -7,11 +7,11 @@ var ToDoRouteController = Backbone.Router.extend({
     "*path" : "defaultRoute"
   },
   renderHome: function(name,activeTab) {
-    console.log(name + " " +activeTab);
+    console.log("hello " +name + " " +activeTab);
   },
   defaultRoute: function() {
-    console.log("defaultRoute");
-    this.navigate("#mt-todo/#list",{trigger:true});
+    console.log("default-Route");
+    this.navigate("#mt-todo/list",{trigger:true});
   } 
 
 });
