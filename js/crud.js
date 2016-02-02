@@ -81,7 +81,7 @@ var taskGroupManager = new DbManager('TaskGroup');
 var taskItemManager = new DbManager('TaskItems');
 
 $(function(){
-  if (typeof ToDoRouteController != 'undefined') {
+  if (typeof toDoRouteController != 'undefined') {
     Backbone.history.start({pushState:true});  
   }
 });
