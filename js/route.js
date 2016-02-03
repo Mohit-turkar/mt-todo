@@ -1,5 +1,4 @@
 var ToDoRouteController = Backbone.Router.extend({
-
   routes: {
     "list": "renderHome",
     "list(/:name)": "renderHome",
@@ -9,11 +8,10 @@ var ToDoRouteController = Backbone.Router.extend({
   renderHome: function(name,activeTab) {
     console.log("hello " +name + " " +activeTab);
   },
-  defaultRoute: function() {
-    console.log("default-Route");
-    this.navigate("#mt-todo/list",{trigger:true});
-  } 
-
+  defaultRoute: function(path) {
+    console.log("default-Route",path);
+    this.navigate("/",{trigger:true});
+  }
 });
 
 var toDoRouteController = new ToDoRouteController();
