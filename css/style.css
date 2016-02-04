@@ -1,3 +1,5 @@
 select{
 	min-width : 150px;
 }
+
+.ui-datepicker { position: relative; z-index: 10000 !important; }
