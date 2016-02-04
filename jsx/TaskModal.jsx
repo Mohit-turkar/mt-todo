@@ -104,5 +104,5 @@ var TaskModal =  React.createClass({
 
 ReactDOM.render(
       <TaskModal/>,
-      document.getElementById('todo-global')
+      document.getElementById('todo-modal-task')
     );

@@ -19,11 +19,12 @@ var TaskGroup = React.createClass({
   },
   componentDidMount: function() {
     var self = this;
+    var firstFetch = true;
     
     var processList = function(status,data){
       var list = [];
       for(var idx in data){
-        list.push(<TaskGroupRow key={idx} item={data[idx]}/>);
+        list.push(<TaskGroupRow id={idx} key={idx} item={data[idx]}/>);
       }
       self.setState({list:list});
     }
@@ -32,6 +33,10 @@ var TaskGroup = React.createClass({
 
     window.AppEvent.subscribe('refresh-TaskGroup',function(data){
       processList('success',data);
+      if(firstFetch){
+        firstFetch = false;
+        $('#taskList'+window.gUrlParams.list).trigger('click');
+      }
     });
   },
   render: function() {
@@ -61,16 +66,30 @@ var TaskGroup = React.createClass({
 
 var TaskGroupRow = React.createClass({
   handleClick: function(){
+    var self = this;
     var id = this.props.item.objectId;
     window.AppEvent.fire('fetchList',id);
     window.AppEvent.fire('ActiveList',id);
+
+    $(this.refs.Row).siblings().removeClass('active');
+    $(this.refs.Row).addClass('active');
+    self.customHref();
+  },
+  customHref:function(){
+    var active = 'inProgress'
+    if(gUrlParams.active == 'Trash'){
+      active = 'trash'
+    }else if(gUrlParams.active == 'Completed'){
+      active = 'completed'
+    }
+    window.location.hash = "#list/"+this.props.id+"/"+active;
   },
   render: function() {
     var item = this.props.item;
-    var actionGrp = {complete:'hidden'}
+    var actionGrp = {complete:'hidden'};
     return (
-      <tr className='clickable-row'>
-        <td style={{'cursor':'pointer'}} className="col-md-1 text-left" 
+      <tr ref="Row" className={'clickable-row'}>
+        <td id={"taskList"+this.props.id} style={{'cursor':'pointer'}} className="col-md-1 text-left" 
         onClick={this.handleClick}>{item.name}</td>
         <td className="col-md-2 text-right">
           <UserActions name='taskGroups' actionGrp={actionGrp} item={item}/>
@@ -140,7 +159,7 @@ var TaskItems = React.createClass({
 var TaskItemRow = React.createClass({
   getInitialState: function() {
     return {
-      activeTab: "In Progress" 
+      activeTab: window.gUrlParams.active 
     };
   },
   showDataCb : function(name){
@@ -269,11 +288,15 @@ var TaskTypes = React.createClass({
     window.AppEvent.fire('showData',evt.target.firstChild.nodeValue);
   },
   render: function() {
+    var type1 = (gUrlParams.active == "In Progress")?'active':'';
+    var type3 = (gUrlParams.active == "Trash")?'active':'';
+    var type2 = (gUrlParams.active == "Completed")?'active':'';
+
     return (
       <ul id="taskTypes" className="nav nav-tabs">
-        <li className='active'><a href="#inProgress" onClick={this.setTab}>In Progress</a></li>
-        <li><a href="#completed" onClick={this.setTab}>Completed</a></li>
-        <li><a href="#trash" onClick={this.setTab}>Trash</a></li>
+        <li className={type1}><a href={"#list/"+ gUrlParams.list +"/inProgress"} onClick={this.setTab}>In Progress</a></li>
+        <li className={type2}><a href={"#list/"+ gUrlParams.list +"/completed"} onClick={this.setTab}>Completed</a></li>
+        <li className={type3}><a href={"#list/"+ gUrlParams.list +"/trash"} onClick={this.setTab}>Trash</a></li>
         <input type="button" data-toggle="modal" data-target="#taskModal" style={{'float':'right'}} value='Add Task'/>
       </ul>
     );

@@ -59,5 +59,5 @@ var GroupModal =  React.createClass({
 
 ReactDOM.render(
       <GroupModal/>,
-      document.getElementById('todo-global')
+      document.getElementById('todo-modal-grp')
     );

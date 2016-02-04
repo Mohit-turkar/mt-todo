@@ -91,7 +91,7 @@ var taskGroupManager = new DbManager('TaskGroup');
 var taskItemManager = new DbManager('TaskItems');
 
 $(function(){
-  // if (typeof toDoRouteController != 'undefined') {
-  //   Backbone.history.start();//{pushState:true,root: "/index.html"}  
-  // }
+  if (typeof toDoRouteController != 'undefined') {
+    Backbone.history.start();//{pushState:true,root: "/index.html"}  
+  }
 });
